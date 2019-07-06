@@ -31,7 +31,7 @@ Widget buildTextField(String currency, String cifrao, TextEditingController crtl
             labelStyle: TextStyle(fontSize: 16, color: Colors.amber),
             border: OutlineInputBorder(),
             prefixText: cifrao),
-          keyboardType: TextInputType.number,
+          keyboardType: TextInputType.numberWithOptions(decimal: true),
           style: TextStyle(color: Colors.amber),
           onChanged: fnc
         );
