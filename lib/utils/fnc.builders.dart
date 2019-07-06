@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 //Top Bar
-Widget buildAppBar(String titleBar){
+Widget buildAppBar(String titleBar, Function fnc){
   return AppBar(
           title: Text(titleBar),
           backgroundColor: Colors.amber,
@@ -9,7 +9,7 @@ Widget buildAppBar(String titleBar){
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.delete_forever, size: 30,),
-              onPressed: (){},
+              onPressed: fnc,
             )
           ],
         );

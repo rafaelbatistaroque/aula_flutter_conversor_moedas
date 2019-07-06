@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:aula_flutter_conversor_moedas/utils/fnc.request.dart';
+import 'package:aula_flutter_conversor_moedas/utils/fnc.builders.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -8,55 +9,48 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
+  //Control values inputBox's
+  final realController = TextEditingController();
+  final dolarController = TextEditingController();
+  final euroController = TextEditingController();
+
   double dolar, euro;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      
-      //Barra superior
-      appBar: AppBar(
-        title: Text("Conversor de moedas"),
-        backgroundColor: Colors.amber,
-        centerTitle: true),
-      
-      //Corpo do App
+      //Top bar
+      appBar: buildAppBar("Conversor de moedas", _clearFields),
+      //Body App
       body: FutureBuilder<Map>(  
         future: getData(),
         builder: (context, snapshot) {
           switch(snapshot.connectionState){
             case ConnectionState.none:
+              return buildMsgUser("Sem conexão. Tente mais tarde.");
             case ConnectionState.waiting:
-              return Center(
-                child: Text("Carregando dados...",
-                    style: TextStyle(color: Colors.amber, fontSize: 20),
-                    textAlign: TextAlign.center)
-              );
+              return buildMsgUser("Carregando dados...");
             default:
               if(snapshot.hasError){
-                return Center(
-                  child: Text("Erro ao carregar...",
-                    style: TextStyle(color: Colors.amber,fontSize: 20),
-                    textAlign: TextAlign.center),
-                );
-              }else{
-                // dolar = snapshot.data["results"]["currencies"]["USD"]["buy"];
-                // euro = snapshot.data["results"]["currencies"]["EUR"]["buy"];
-                
+                return buildMsgUser("Erro ao carregar...");
+              }
+              else{
+                dolar = snapshot.data["USD"]["buy"];
+                euro = snapshot.data["EUR"]["buy"];
+                                
                 return SingleChildScrollView(
+                  padding: EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
                       Icon(Icons.monetization_on,size: 120.0, color: Colors.amber),
-                      TextField(
-                        decoration: InputDecoration(
-                          labelText: "Real",
-                          labelStyle: TextStyle(fontSize: 16, color: Colors.amber),
-                          border: OutlineInputBorder(),
-                          prefixText: "R\$"
-                        ),
-                      )
+                      SizedBox(height: 10),
+                      buildTextField("Reais", "R\$", realController, _realToExchanger),
+                      SizedBox(height: 10),
+                      buildTextField("Dólares", "U\$", dolarController, _dolarToExchanger),
+                      SizedBox(height: 10),
+                      buildTextField("Euros", "€", euroController, _euroToExchanger)
                     ],
                   ),
                 );
@@ -64,5 +58,26 @@ class _HomeState extends State<Home> {
           }
         }),
     );
+  }
+  void _clearFields(){
+    realController.text = "";
+    dolarController.text = "";
+    euroController.text = "";
+  }
+
+  void _realToExchanger(String text){
+    double real = double.parse(text);
+    dolarController.text = (real / dolar).toStringAsFixed(2);
+    euroController.text = (real / euro).toStringAsFixed(2);
+  }
+  void _dolarToExchanger(String text){
+    double dolar = double.parse(text);
+    realController.text = (dolar * this.dolar).toStringAsFixed(2);
+    euroController.text = (dolar * this.dolar / euro).toStringAsFixed(2);
+  }
+  void _euroToExchanger(String text){
+    double euro = double.parse(text);
+    realController.text = (euro * this.euro).toStringAsFixed(2);
+    dolarController.text = (euro * this.euro / dolar).toStringAsFixed(2);
   }
 }
