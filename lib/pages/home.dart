@@ -30,7 +30,7 @@ class _HomeState extends State<Home> {
             case ConnectionState.none:
               return buildMsgUser("Sem conexão. Tente mais tarde.");
             case ConnectionState.waiting:
-              return buildMsgUser("Carregando dados...");
+              return buildMsgUser("Aguarde...");
             default:
               if(snapshot.hasError){
                 return buildMsgUser("Erro ao carregar...");
